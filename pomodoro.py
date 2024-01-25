@@ -19,6 +19,10 @@ _max_long_break_time = 15 * 60 if not test else 7
 # Current sections
 section_number = 1
 
+# Messages
+message_finish_pomodoro = "¿Desear finalizar Pomodoro? [S] o [N]: "
+message_error = "Opción invalida 👾"
+
 
 def print_seconds(arg):
     minutes = int(arg / 60)
@@ -47,29 +51,37 @@ def send_notification(
     toaster.show_toast(new_toast)
 
 
+def start_player(path_sound):
+    player_st = vlc.MediaPlayer(path_sound)
+    player_st.play()
+
+
+def show_message_finish_pomodoro():
+    while True:
+        options_close = input(message_finish_pomodoro)
+        if options_close.lower() == 's':
+            exit()
+        else:
+            break
+
+
 def control_pomodoro():
     while True:
-        options = input("¿Deseas continuar con el Pomodoro? [S] o [N]")
+        options = input("¿Deseas continuar con el Pomodoro? [S] o [N]: ")
         if options.lower() == 's':
             start_pomodoro()
             break
         elif options.lower() == 'n':
-            while True:
-                options_close = input("¿Desear finalizar Pomodoro? [S] o [N]")
-                if options_close.lower() == 's':
-                    exit()
-                else:
-                    break
+            show_message_finish_pomodoro()
         else:
-            print_error("Opción invalida 👾")
+            print_error(message_error)
             continue
 
 
 def start_break(long: bool = False):
     count = 0
     time_to_break = _max_break_time if not long else _max_long_break_time
-    player_st = vlc.MediaPlayer("/media/break_time.mp3")
-    player_st.play()
+    start_player("/media/break_time.mp3")
     while True:
         time.sleep(1)
         count += 1
@@ -83,56 +95,46 @@ def start_break(long: bool = False):
 def control_breaks():
     global _max_sections_to_long_break, section_number
 
+    message_start_break = "¿Deseas iniciar ya el tiempo de descanso? [S] o [N]: "
+
     if section_number == _max_sections_to_long_break:
         print("Descanso largo muy merecido 🐻")
         while True:
-            options = input("¿Deseas iniciar ya el tiempo de descanso? [S] o [N]")
+            options = input(message_start_break)
             if options.lower() == 's':
                 section_number = 1
                 start_break(long=True)
                 break
             elif options.lower() == 'n':
-                while True:
-                    options_close = input("¿Desear finalizar Pomodoro? [S] o [N]")
-                    if options_close.lower() == 's':
-                        exit()
-                    else:
-                        break
+                show_message_finish_pomodoro()
             else:
-                print_error("Opción invalida 👾")
+                print_error(message_error)
                 continue
     elif section_number < _max_sections_to_long_break:
         print(f"Descanso de {int(_max_break_time / 60)}.")
         while True:
-            options = input("¿Deseas iniciar ya el tiempo de descanso? [S] o [N]")
+            options = input(message_start_break)
             if options.lower() == 's':
                 start_break()
                 break
             elif options.lower() == 'n':
-                while True:
-                    options_close = input("¿Desear finalizar Pomodoro? [S] o [N]")
-                    if options_close.lower() == 's':
-                        exit()
-                    else:
-                        break
+                show_message_finish_pomodoro()
             else:
-                print_error("Opción invalida 👾")
+                print_error(message_error)
                 continue
 
 
 def start_pomodoro():
     global section_number
     count = 0
-    player_st = vlc.MediaPlayer("/media/pomodoro_start.mp3")
-    player_st.play()
+    start_player("/media/pomodoro_start.mp3")
     try:
         while True:
             time.sleep(1)
             count += 1
             if count == _max_section_time:
                 send_notification("¡Tiempo finalizado!")
-                player_st = vlc.MediaPlayer("/media/alert_pomodoro.mp3")
-                player_st.play()
+                start_player("/media/alert_pomodoro.mp3")
                 section_number += 1
                 control_breaks()
                 break
