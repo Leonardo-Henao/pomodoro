@@ -7,9 +7,9 @@ La técnica Pomodoro es un método para mejorar la administración del tiempo de
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 <a href="https://github.com/Leonardo-Henao/pomodoro/blob/main/LICENSE">
 ![License](https://img.shields.io/github/license/Ileriayo/markdown-badges?style=for-the-badge)</a>
-</div>
 
 ![img](/src/screenshots/img_start_pomodoro.png)
+</div>
 
 ## Requerimientos
 
