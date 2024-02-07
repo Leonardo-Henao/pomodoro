@@ -26,6 +26,7 @@ Ajuste los comandos a su OS, Linux y Mac con `/` Windows `\` 😇
 3. Habilite el entorno virtual `.\venv\Scripts\activate`
 4. Instale los las librerias necesarias `pip install -r requirements.txt`
 5. Inicie el script `python .\pomodoro.py`
+6. [OPCIONAL] Generar instalador `pyinstaller .\pomodoro.py --noconsole` en la carpeta `dist` quedara el archivo .exe (windows).
 
 <div align=center>
 

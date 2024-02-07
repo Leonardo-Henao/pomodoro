@@ -1,4 +1,9 @@
-colorama==0.4.6
-python-vlc==3.0.20123
+altgraph==0.17.4
+packaging==23.2
+pefile==2023.2.7
+pyinstaller==6.3.0
+pyinstaller-hooks-contrib==2024.0
+pywin32-ctypes==0.2.2
+setuptools==69.0.3
 toasts-winrt==1.0.0
 Windows-Toasts==1.0.2

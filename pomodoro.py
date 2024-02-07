@@ -4,7 +4,7 @@ from windows_toasts import Toast, WindowsToaster, ToastDuration
 import tkinter as tk
 
 # Change to False for real values
-test = True
+test = False
 
 _pattern_format_time = "%I:%M:%S %p"
 
@@ -26,12 +26,12 @@ def send_notification(message: str, is_long: bool = True, title: str = "Pomodoro
     toaster.show_toast(new_toast)
 
 
-def insert_frame(master_, height_, row_, column_=1):
+def insert_frame(master_, height_):
     """
     Inserta espacio en la ventana
     """
     frame_1 = tk.Frame(master=master_, width=6, height=height_, bg="#212121")
-    frame_1.grid(column=column_, row=row_, columnspan=6)
+    frame_1.pack()
 
 
 def get_time():
@@ -60,6 +60,10 @@ def get_finish_time(min: int):
 
 
 def UpdateWindowDecor(func):
+    """
+    Decorador para actualizar el label en la UI
+    """
+
     def wrapper(label: tk.Label, time: str = None):
         func(label, time) if time else func(label)
         window.update()
@@ -68,6 +72,9 @@ def UpdateWindowDecor(func):
 
 
 def finalizar_pomo_tkinder():
+    """
+    Finaliza el programa
+    """
     window.destroy()
 
 
@@ -108,32 +115,32 @@ def start_break():
     time_format = get_finish_time(next_break)
     update_label_finish(label_finish, time_format)
 
-    button_end.grid(**_button_center)
-    button_start_break.grid_remove()
+    button_end.pack(after=button_start_break)
+    button_start_break.pack_forget()
 
     for x in get_time():
-        try:
-            update_label_time_count(label_count_clock, x)
-            if x == time_format:
-                button_end.grid_remove()
-                button_start.grid(**_button_center)
+        # try:
+        update_label_time_count(label_count_clock, x)
+        if x == time_format:
+            button_start.pack(after=button_end)
+            button_end.pack_forget()
 
-                if next_break == _max_short_break_time:
-                    update_break_count(label_count_break)
-                else:
-                    update_long_break_count(label_count_long_break)
+            if next_break == _max_short_break_time:
+                update_break_count(label_count_break)
+            else:
+                update_long_break_count(label_count_long_break)
 
-                send_notification("¡Descanso terminado!")
-                break
-        except:
+            send_notification("¡Descanso terminado!")
             break
+        # except:
+        #     break
 
 
 def start_pomo():
     global label_finish
 
-    button_start.grid_remove()
-    button_end.grid(**_button_center)
+    button_end.pack(after=button_start)
+    button_start.pack_forget()
 
     time_format = get_finish_time(_max_section_pomo_time)
     update_label_finish(label_finish, time_format)
@@ -142,8 +149,8 @@ def start_pomo():
         try:
             update_label_time_count(label_count_clock, x)
             if x == time_format:
-                button_end.grid_remove()
-                button_start_break.grid(**_button_center)
+                button_start_break.pack(after=button_end)
+                button_end.pack_forget()
                 update_pomo_count(label_count_pomos)
                 send_notification("¡Pomodoro terminado!")
                 break
@@ -152,11 +159,11 @@ def start_pomo():
             break
 
 
-# GUI
+# UI
 
 _styles = {"color_font": "ivory2", "color_background": "#212121"}
-_button_center = {"column": 3, "row": 5}
-_width_buttons = {"width": 30}
+_button_center = {"column": 4, "row": 5}
+_width_buttons = {"width": 30, "relief": "flat"}
 _text_start_clock = "00:00"
 _font_poppins = lambda size=12, bold=True: ("Poppins", f"{size}", "bold" if bold else "normal")
 _label_style = {"fg": _styles["color_font"], "bg": _styles["color_background"]}
@@ -170,38 +177,39 @@ window.configure(bg=_styles["color_background"])
 label_head = tk.Label(
     window,
     text="Bienvenido, \nNos alegra saber que deseas ser mas productivo.",
-    padx=4,
-    pady=2,
+    padx=6,
+    pady=4,
     font=_font_poppins(),
     **_label_style,
 )
-label_head.grid(column=1, row=1, columnspan=6)
+label_head.pack()
 
 # Count
 label_count_clock = tk.Label(window, text=_text_start_clock, font=("Arial", "20", "roman"), **_label_style)
-label_count_clock.grid(column=1, row=2, columnspan=6, pady=2)
+label_count_clock.pack()
 
 # Finish
 label_finish = tk.Label(
     window, text=_text_start_clock, font=("Arial", "15", "roman"), fg="red", bg=_styles["color_background"]
 )
-label_finish.grid(column=1, row=3, columnspan=6)
+label_finish.pack()
 
 # Space
-insert_frame(window, 50, 4)
+insert_frame(window, 50)
 
-# Button
+# Button start
 button_start = tk.Button(
     window,
     text="Iniciar pomodoro",
     command=start_pomo,
-    bg="cyan",
+    bg="#2ECC71",
     fg="black",
     font=("poppins", "12", "bold"),
     **_width_buttons,
 )
-button_start.grid(**_button_center)
+button_start.pack()
 
+# Button end
 button_end = tk.Button(
     window,
     text="Finalizar",
@@ -212,30 +220,40 @@ button_end = tk.Button(
     **_width_buttons,
 )
 
-
+# Button start break
 button_start_break = tk.Button(
     window,
     text="Iniciar pausa",
     command=start_break,
-    bg="gray",
-    fg="black",
+    bg="#2E86C1",
+    fg="white",
     font=("poppins", "12", "bold"),
     **_width_buttons,
 )
 
 # Space
-insert_frame(window, 50, 7)
+insert_frame(window, 50)
 
 # label count pomo
 label_count_pomos = tk.Label(window, text="Pomodoros: \n0", **_label_style, font=_font_poppins(bold=False))
-label_count_pomos.grid(column=2, row=8)
+label_count_pomos.pack(fill="both")
 
 # label count break
-label_count_break = tk.Label(window, text="Descansos cortos: \n0", **_label_style, font=_font_poppins(bold=False))
-label_count_break.grid(column=3, row=8)
+label_count_break = tk.Label(
+    window, text="Descansos cortos: \n0", bg="#3498DB", fg="white", font=_font_poppins(bold=False), width=21
+)
+label_count_break.pack(side="left")
 
 # label count long break
-label_count_long_break = tk.Label(window, text="Descansos largos: \n0", **_label_style, font=_font_poppins(bold=False))
-label_count_long_break.grid(column=5, row=8)
+label_count_long_break = tk.Label(
+    window, text="Descansos largos: \n0", font=_font_poppins(bold=False), bg="#2980B9", fg="white", width=21
+)
+label_count_long_break.pack()
+
+# Space
+# insert_frame(window, 50)
+
+label_final = tk.Label(window, width=50)
+# label_final.pack(side="top", fill="both")
 
 window.mainloop()
