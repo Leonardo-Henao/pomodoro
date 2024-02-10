@@ -1,10 +1,19 @@
 from datetime import datetime, timedelta
 import time
-from windows_toasts import Toast, WindowsToaster, ToastDuration
+from windows_toasts import (
+    Toast,
+    WindowsToaster,
+    ToastDuration,
+    ToastAudio,
+    AudioSource,
+)
 import tkinter as tk
 
 # Change to False for real values
 test = False
+
+# Sound
+play_alarm = True
 
 _pattern_format_time = "%I:%M:%S %p"
 
@@ -20,9 +29,14 @@ long_break_count = 0
 
 
 def send_notification(message: str, is_long: bool = True, title: str = "Pomodoro"):
+
     toaster = WindowsToaster(title)
     new_toast = Toast([message])
     new_toast.duration = ToastDuration.Long if is_long else ToastDuration.Default
+
+    if play_alarm:
+        new_toast.audio = ToastAudio(sound=AudioSource.Alarm)
+
     toaster.show_toast(new_toast)
 
 
@@ -162,7 +176,6 @@ def start_pomo():
 # UI
 
 _styles = {"color_font": "ivory2", "color_background": "#212121"}
-_button_center = {"column": 4, "row": 5}
 _width_buttons = {"width": 30, "relief": "flat"}
 _text_start_clock = "00:00"
 _font_poppins = lambda size=12, bold=True: ("Poppins", f"{size}", "bold" if bold else "normal")
@@ -249,11 +262,5 @@ label_count_long_break = tk.Label(
     window, text="Descansos largos: \n0", font=_font_poppins(bold=False), bg="#2980B9", fg="white", width=21
 )
 label_count_long_break.pack()
-
-# Space
-# insert_frame(window, 50)
-
-label_final = tk.Label(window, width=50)
-# label_final.pack(side="top", fill="both")
 
 window.mainloop()
